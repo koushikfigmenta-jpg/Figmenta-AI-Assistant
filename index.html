@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Glycine – Luxury Beauty Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-container {
+      width: 380px;
+      max-width: 95%;
+      background: #0b1c26;
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background: linear-gradient(135deg, #c9a855, #f3e2a9);
+      color: #1a1a1a;
+      padding: 14px;
+      text-align: center;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .chat-header small {
+      display: block;
+      font-weight: normal;
+      opacity: 0.85;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.4;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .bot {
+      background: rgba(201,168,85,0.18);
+      color: #f3e2a9;
+      align-self: flex-start;
+    }
+
+    .user {
+      background: #f3e2a9;
+      color: #1a1a1a;
+      align-self: flex-end;
+    }
+
+    .typing {
+      font-style: italic;
+      opacity: 0.8;
+    }
+
+    .chat-input {
+      display: flex;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .chat-input input {
+      flex: 1;
+      border: none;
+      padding: 14px;
+      font-size: 14px;
+      outline: none;
+      background: #0b1c26;
+      color: #fff;
+    }
+
+    .chat-input button {
+      border: none;
+      padding: 0 18px;
+      background: linear-gradient(135deg, #c9a855, #f3e2a9);
+      color: #1a1a1a;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .chat-input button:hover {
+      opacity: 0.9;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chat-container">
+    <div class="chat-header">
+      Glycine Assistant
+      <small>Lugano · Swiss-Italian Luxury</small>
+    </div>
+
+    <div class="chat-messages" id="chatMessages"></div>
+
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="Ask about services or book an appointment..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const N8N_WEBHOOK_URL = "https://YOUR-N8N-DOMAIN/webhook/glycine-chat"; // 🔴 Replace this
+    const chatMessages = document.getElementById("chatMessages");
+    const userInput = document.getElementById("userInput");
+
+    const conversationId = "conv_" + Math.random().toString(36).substring(2, 12);
+
+    function addMessage(text, sender) {
+      const div = document.createElement("div");
+      div.className = `message ${sender}`;
+      div.innerText = text;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function addTypingIndicator() {
+      const div = document.createElement("div");
+      div.className = "message bot typing";
+      div.id = "typingIndicator";
+      div.innerText = "Glycine is typing...";
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const el = document.getElementById("typingIndicator");
+      if (el) el.remove();
+    }
+
+    function sendMessage() {
+      const message = userInput.value.trim();
+      if (!message) return;
+
+      addMessage(message, "user");
+      userInput.value = "";
+      userInput.disabled = true;
+
+      addTypingIndicator();
+
+      fetch(N8N_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          brand: "Glycine",
+          channel: "web",
+          conversation_id: conversationId,
+          message: message
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        removeTypingIndicator();
+        userInput.disabled = false;
+        userInput.focus();
+
+        const reply = data.reply || "Sorry, I did not understand that.";
+        addMessage(reply, "bot");
+      })
+      .catch(err => {
+        removeTypingIndicator();
+        userInput.disabled = false;
+        addMessage("Sorry, something went wrong. Please try again.", "bot");
+        console.error(err);
+      });
+    }
+
+    userInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    // Initial welcome message
+    window.onload = () => {
+      addMessage(
+        "Welcome to Glycine, Lugano’s Swiss-Italian luxury beauty salon. How may I assist you today?",
+        "bot"
+      );
+    };
+  </script>
+
+</body>
+</html>
