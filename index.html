@@ -1,293 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Figmenta Assistant</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        /* Figmenta Brand Theme - Luxurious, Minimalist for Beauty/Fashion/Luxury */
-        :root {
-            --primary-navy: #0A2540; /* Deep navy for headers, accents */
-            --gold-accent: #D4AF37; /* Gold for highlights, buttons */
-            --bg-cream: #F9F9F5; /* Soft cream background */
-            --text-dark: #1A1A1A; /* Dark gray for primary text */
-            --text-light: #FFFFFF; /* White for overlays */
-            --border-light: #E5E5E5; /* Subtle borders */
-            --shadow-elegant: 0 8px 32px rgba(10, 37, 64, 0.1); /* Soft, luxurious shadow */
-            --border-radius: 12px; /* Gentle curves */
-            --font-heading: 'Playfair Display', serif; /* Elegant serif for titles */
-            --font-body: 'Inter', -apple-system, sans-serif; /* Clean sans for body */
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth animations */
-        }
-
-        body {
-            font-family: var(--font-body);
-            background-color: var(--bg-cream);
-            color: var(--text-dark);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 400px;
-            margin: 0 auto;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                width: 90%;
-                right: 5%;
-                left: 5%;
-            }
-        }
-
-        .card {
-            background: var(--text-light);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-elegant);
-            overflow: hidden;
-            border: 1px solid var(--border-light);
-            display: flex;
-            flex-direction: column;
-            height: 600px; /* Fixed height for consistency; adjust if needed */
-            transition: var(--transition);
-        }
-
-        .card:hover {
-            box-shadow: 0 12px 40px rgba(10, 37, 64, 0.15);
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--primary-navy) 0%, #1E3A5F 100%);
-            color: var(--text-light);
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
-        }
-
-        .logo {
-            width: 32px;
-            height: 32px;
-            background: var(--gold-accent);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-heading);
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-navy);
-            flex-shrink: 0;
-        }
-
-        .title {
-            font-family: var(--font-heading);
-            font-size: 20px;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .subtitle {
-            font-size: 12px;
-            opacity: 0.9;
-            margin: 0;
-            font-weight: 300;
-        }
-
-        .messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: var(--bg-cream);
-            scroll-behavior: smooth;
-        }
-
-        .messages::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .messages::-webkit-scrollbar-track {
-            background: var(--border-light);
-        }
-
-        .messages::-webkit-scrollbar-thumb {
-            background: var(--primary-navy);
-            border-radius: 2px;
-        }
-
-        .message {
-            margin-bottom: 16px;
-            padding: 12px 16px;
-            border-radius: var(--border-radius);
-            max-width: 85%;
-            position: relative;
-            word-wrap: break-word;
-            font-size: 14px;
-            line-height: 1.5;
-            transition: var(--transition);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .message.bot {
-            background: var(--primary-navy);
-            color: var(--text-light);
-            align-self: flex-start;
-            margin-left: 0;
-            border-bottom-left-radius: 4px;
-        }
-
-        .message.user {
-            background: var(--gold-accent);
-            color: var(--text-dark);
-            align-self: flex-end;
-            margin-right: 0;
-            border-bottom-right-radius: 4px;
-        }
-
-        .message.typing {
-            background: transparent;
-            color: var(--primary-navy);
-            font-style: italic;
-            box-shadow: none;
-        }
-
-        .dot {
-            display: inline-block;
-            width: 4px;
-            height: 4px;
-            background: var(--gold-accent);
-            border-radius: 50%;
-            margin: 0 2px;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-
-        .dot:nth-child(1) { animation-delay: -0.32s; }
-        .dot:nth-child(2) { animation-delay: -0.16s; }
-
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
-
-        .quick {
-            padding: 12px 20px;
-            background: var(--text-light);
-            border-top: 1px solid var(--border-light);
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            max-height: 80px;
-            overflow-y: auto;
-        }
-
-        .chip {
-            background: var(--bg-cream);
-            color: var(--text-dark);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            cursor: pointer;
-            border: 1px solid var(--border-light);
-            transition: var(--transition);
-            user-select: none;
-        }
-
-        .chip:hover {
-            background: var(--primary-navy);
-            color: var(--text-light);
-            border-color: var(--primary-navy);
-            transform: translateY(-1px);
-        }
-
-        .input-area {
-            padding: 20px;
-            background: var(--text-light);
-            border-top: 1px solid var(--border-light);
-            display: flex;
-            gap: 12px;
-        }
-
-        .input {
-            flex: 1;
-            border: 1px solid var(--border-light);
-            border-radius: 24px;
-            padding: 12px 20px;
-            font-family: var(--font-body);
-            font-size: 14px;
-            outline: none;
-            transition: var(--transition);
-            background: var(--bg-cream);
-        }
-
-        .input:focus {
-            border-color: var(--gold-accent);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-        }
-
-        .input::placeholder {
-            color: #A0A0A0;
-            opacity: 1;
-        }
-
-        .btn {
-            background: var(--primary-navy);
-            color: var(--text-light);
-            border: none;
-            border-radius: 24px;
-            padding: 12px 20px;
-            cursor: pointer;
-            font-family: var(--font-body);
-            font-weight: 500;
-            font-size: 14px;
-            min-width: 80px;
-            transition: var(--transition);
-            flex-shrink: 0;
-        }
-
-        .btn:hover:not(:disabled) {
-            background: var(--gold-accent);
-            color: var(--primary-navy);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        /* Accessibility enhancements */
-        [role="region"] {
-            outline: none;
-        }
-
-        [aria-live="polite"] .message:last-child {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Hide quick replies if aria-hidden=true */
-        [aria-hidden="true"] {
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Figmenta Assistant</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000000;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding:20px;
+    }
+    .container { max-width:500px; width:100%; }
+    .card {
+      background:#ffffff;
+      border-radius:0;
+      box-shadow:0 25px 80px rgba(0,0,0,0.15);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      max-height:90vh;
+      border:1px solid #e5e5e5;
+    }
+    .header {
+      background: #000000;
+      color:#ffffff;
+      padding:24px;
+      display:flex;
+      align-items:center;
+      gap:16px;
+      border-bottom:1px solid #1a1a1a;
+    }
+    .logo {
+      width:44px; height:44px;
+      background:#ffffff;
+      color:#000000;
+      border-radius:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      font-size:20px;
+      letter-spacing:-0.5px;
+    }
+    .title { 
+      font-size:16px; 
+      font-weight:600; 
+      letter-spacing:-0.3px;
+    }
+    .subtitle { 
+      font-size:11px; 
+      opacity:0.7; 
+      margin-top:4px; 
+      font-weight:400;
+      letter-spacing:0.3px;
+    }
+    .messages {
+      flex:1;
+      overflow-y:auto;
+      padding:24px;
+      background:#fafafa;
+    }
+    .message {
+      margin-bottom:16px;
+      padding:14px 18px;
+      border-radius:0;
+      max-width:80%;
+      animation: fadeIn 0.3s;
+      line-height:1.5;
+    }
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(10px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+    .message.bot {
+      background:#ffffff;
+      color:#1a1a1a;
+      margin-right:auto;
+      border:1px solid #e5e5e5;
+      font-size:14px;
+    }
+    .message.user {
+      background: #000000;
+      color:#ffffff;
+      margin-left:auto;
+      font-size:14px;
+    }
+    .message.typing {
+      background:#ffffff;
+      color:#666;
+      border:1px solid #e5e5e5;
+      font-style:normal;
+      font-size:14px;
+    }
+    .dot {
+      display:inline-block;
+      width:5px; height:5px;
+      background:#666;
+      border-radius:50%;
+      margin:0 2px;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+    .dot:nth-child(1) { animation-delay:-0.32s; }
+    .dot:nth-child(2) { animation-delay:-0.16s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform:scale(0); }
+      40% { transform:scale(1); }
+    }
+    .meta {
+      display:block;
+      font-size:11px;
+      margin-top:6px;
+      opacity:0.6;
+    }
+    .quick {
+      padding:16px 24px;
+      background:#ffffff;
+      border-top:1px solid #e5e5e5;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .chip {
+      background:#fafafa;
+      border:1px solid #e5e5e5;
+      padding:10px 18px;
+      border-radius:0;
+      font-size:13px;
+      cursor:pointer;
+      transition:all 0.2s;
+      user-select:none;
+      font-weight:500;
+      letter-spacing:-0.2px;
+    }
+    .chip:hover {
+      background: #000000;
+      color:#ffffff;
+      border-color:#000000;
+    }
+    .input-area {
+      padding:20px 24px;
+      background:#ffffff;
+      border-top:1px solid #e5e5e5;
+      display:flex;
+      gap:12px;
+    }
+    .input {
+      flex:1;
+      border:1px solid #d4d4d4;
+      border-radius:0;
+      padding:12px 18px;
+      font-size:14px;
+      outline:none;
+      transition:border 0.2s;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .input:focus { 
+      border-color:#000000; 
+      box-shadow:0 0 0 1px #000000;
+    }
+    .btn {
+      background: #000000;
+      color:#ffffff;
+      border:none;
+      padding:12px 28px;
+      border-radius:0;
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+      transition:all 0.2s;
+      letter-spacing:0.3px;
+      text-transform:uppercase;
+    }
+    .btn:hover {
+      background:#1a1a1a;
+      box-shadow:0 4px 16px rgba(0,0,0,0.2);
+    }
+    .btn:disabled {
+      opacity:0.4;
+      cursor:not-allowed;
+      transform:none;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <div class="card figmenta-theme" role="region" aria-label="Figmenta Assistant chat">
+    <div class="card" role="region" aria-label="Figmenta Assistant chat">
       <div class="header">
         <div class="logo">F</div>
         <div>
@@ -297,6 +199,7 @@
       </div>
       <div class="messages" id="messages" aria-live="polite">
         <div class="message bot" id="welcome">Welcome to Figmenta. How may I help you today?</div>
+      </div>
       <div class="quick" id="quickReplies" aria-hidden="false">
         <div class="chip" data-text="I need a website">I need a website</div>
         <div class="chip" data-text="Pricing and timelines">Pricing &amp; timelines</div>
